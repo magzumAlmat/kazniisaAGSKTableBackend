@@ -47,6 +47,23 @@ const createCompany=async(req,res)=>{
         const { name, bin, description, address, contactPhone,contactEmail} = req.body;
         console.log('phone',req.body.contactPhone,'email',req.body.contactEmail)
         // Создаем новую запись в базе данных
+
+        const existingCompany = await Company.findOne({
+          where: {
+            [Op.or]: [
+              { name },
+              { bin },
+              { contactEmail },
+              { contactPhone },
+            ],
+          },
+        });
+    
+        if (existingCompany) {
+          return res.status(400).json({ message: 'Company with the same name, bin, or contactEmail already exists' });
+        }
+
+
         const Comp = await Company.create({
             name,
             description,
