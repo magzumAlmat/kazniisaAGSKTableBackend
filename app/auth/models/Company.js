@@ -30,7 +30,7 @@ const Company = sequelize.define('Company', {
         type:DataTypes.STRING,
         allowNull:false
     },
-      contactEmail:{
+    contactEmail:{
         type:DataTypes.STRING,
         allowNull:false
     },

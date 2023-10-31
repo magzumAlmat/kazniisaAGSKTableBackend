@@ -413,50 +413,104 @@ const verifyCodeInspector=async(req,res)=>{
 
 
 
-const addFullProfile = async(req,res)=>{
+// const addFullProfile = async(req,res)=>{
 
-  console.log('111 AddFullProfile Started',req.body)
+//   console.log('111 AddFullProfile Started',req.body)
 
-  const {password,phone,name,lastname}=req.body
+//   const {password,phone,name,lastname}=req.body
 
-  console.log('AddFullProfile Started',password,phone,name,lastname)
+//   console.log('AddFullProfile Started',password,phone,name,lastname)
+
+//   const authHeader = req.headers['authorization'];
+
+//   if (!authHeader) {
+//       return res.status(401).json({ message: 'Authorization header is missing' });
+//   }
+
+//   // Check if the header starts with "Bearer "
+//   if (!authHeader.startsWith('Bearer ')) {
+//       return res.status(401).json({ message: 'Invalid token format' });
+//   }
+
+//   // Extract the token (remove "Bearer " from the header)
+//   const token = authHeader.substring(7);
+//   console.log('token =',token)
+//   // Now you have the JWT token in the 'token' variable
+//   // console.log('JWT Token:', token);
+
+//   const decodedToken=jwt.decode(token)
+//   console.log('Айди юзера который соответствует данному токену', decodedToken);
+
+  
+//   let user = await User.findOne({where: { email:decodedToken.email }})
+
+//   console.log('SELECTED USER=',user)
+//   if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+//     user.password = password;
+//     user.phone = phone;
+//     user.name = name;
+//     user.lastname = lastname;
+        
+//     await user.save();
+    
+//     res.status(200).send(user);
+// }
+const addFullProfile = async (req, res) => {
+  console.log('111 AddFullProfile Started', req.body);
+
+  const { password, phone, name, lastname } = req.body;
+
+  console.log('AddFullProfile Started', password, phone, name, lastname);
+
+  // if (!phone || !/^\d{10}$/.test(phone)) {
+  //   return res.status(400).json({ message: 'Некорректный номер телефона. Номер должен содержать 10 цифр.' });
+  // }
 
   const authHeader = req.headers['authorization'];
 
   if (!authHeader) {
-      return res.status(401).json({ message: 'Authorization header is missing' });
+    return res.status(401).json({ message: 'Authorization header is missing' });
   }
 
   // Check if the header starts with "Bearer "
   if (!authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ message: 'Invalid token format' });
+    return res.status(401).json({ message: 'Invalid token format' });
   }
 
   // Extract the token (remove "Bearer " from the header)
   const token = authHeader.substring(7);
-  console.log('token =',token)
+  console.log('token =', token);
   // Now you have the JWT token in the 'token' variable
   // console.log('JWT Token:', token);
 
-  const decodedToken=jwt.decode(token)
+  const decodedToken = jwt.decode(token);
   console.log('Айди юзера который соответствует данному токену', decodedToken);
 
-  
-  let user = await User.findOne({where: { email:decodedToken.email }})
+  let user = await User.findOne({ where: { email: decodedToken.email } });
 
-  console.log('SELECTED USER=',user)
+  console.log('SELECTED USER=', user);
   if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    user.password = password;
-    user.phone = phone;
-    user.name = name;
-    user.lastname = lastname;
-        
-    await user.save();
-    
-    res.status(200).send(user);
-}
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  // Проверка уникальности номера телефона
+  const userWithPhone = await User.findOne({ where: { phone } });
+  if (userWithPhone && userWithPhone.id !== user.id) {
+    return res.status(400).json({ message: 'Номер телефона уже используется другим пользователем' });
+  }
+
+  user.password = password;
+  user.phone = phone;
+  user.name = name;
+  user.lastname = lastname;
+
+  await user.save();
+
+  res.status(200).send(user);
+};
+
 
 const signUp = async (req, res) =>{
     try {
