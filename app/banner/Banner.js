@@ -28,7 +28,7 @@ const Banner = sequelize.define('Banner', {
   },
     rentDays:{
       type:DataTypes.STRING,
-      allowNull:false
+      allowNull:true
   },
     expiredDate:{
       type:DataTypes.STRING,

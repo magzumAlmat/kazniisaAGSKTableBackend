@@ -4,6 +4,11 @@ const Company=require('../auth/models/Company')
 const User=require('../auth/models/User')
 const jwt = require('jsonwebtoken');
 const sharp = require('sharp');
+const express = require('express');
+const multer = require('multer');
+const Jimp = require('jimp');
+const path = require('path');
+
 
 function generateRandom6DigitCode() {
     const min = 100000; // Smallest 6-digit number
@@ -19,11 +24,12 @@ function generateRandom6DigitCode() {
   }
   
 
-  function generateSixDigitCodeFromDate() {
-    const now = new Date();
-    const year = now.getFullYear().toString().slice(-2); // Получаем последние две цифры года
-    const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Получаем месяц и добавляем ведущий ноль, если нужно
-    const day = now.getDate().toString().padStart(2, '0'); // Получаем день и добавляем ведущий ноль, если нужно
+  function generateSixDigitCodeFromDate(date) {
+  
+    
+    const year = date.split('-')[0]; // Получаем последние две цифры года
+    const month = date.split('-')[1];
+    console.log(' generateSixDiginCodeFromDate started , year =',year,   'month',month)
   
     const min = 100000; // Smallest 6-digit number
     const max = 999999; // Largest 6-digit number
@@ -123,6 +129,69 @@ function generateRandom6DigitCode() {
 //       }
 // }
 
+const addUniqueCodeToBannerImage=(req,res)=>{
+ 
+
+
+
+// Настройка хранилища для загруженных файлов с помощью Multer
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'D:/картинки'); // Путь к папке на диске D
+  },
+  filename: function (req, file, cb) {
+    // Генерация уникального имени файла
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+// Создание экземпляра Multer с настройками хранилища
+const upload = multer({ storage: storage });
+
+app.use(express.json());
+
+// Маршрут для загрузки изображения и добавления водяного знака
+app.post('/addwatermark', upload.single('image'), async (req, res) => {
+  try {
+    const imagePath = req.file.path;
+    const watermarkUrl = 'URL_ВОДЯНОГО_ЗНАКА';
+
+    // Загрузка изображения и водяного знака
+    const image = await Jimp.read(imagePath);
+    const watermark = await Jimp.read(watermarkUrl);
+
+    // Рассчитываем размеры водяного знака
+    const imageWidth = image.getWidth();
+    const watermarkWidth = 0.1 * imageWidth; // 10% от ширины
+    const watermarkHeight = (watermarkWidth / watermark.getWidth()) * watermark.getHeight();
+
+    // Рассчитываем позицию водяного знака (правый нижний угол)
+    const watermarkX = imageWidth - watermarkWidth - 10; // 10 пикселей от правого края
+    const watermarkY = image.getHeight() - watermarkHeight - 10; // 10 пикселей от нижнего края
+
+    // Наложение водяного знака на изображение
+    image.composite(watermark.resize(watermarkWidth, watermarkHeight), watermarkX, watermarkY, {
+      mode: Jimp.BLEND_SOURCE_OVER,
+      opacityDest: 1,
+      opacitySource: 0.5,
+    });
+
+    // Сохранение результата на диск
+    const outputFilePath = imagePath.replace('uploads', 'картинки');
+    await image.writeAsync(outputFilePath);
+
+    // Отправка сообщения об успешной обработке
+    res.json({ message: 'Водяной знак успешно добавлен.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Произошла ошибка при обработке изображения.' });
+  }
+});
+
+
+
+}
+
 const createBanner = async (req, res) => {
   console.log('Banner from createBanner server', req.body, req.file);
 
@@ -132,7 +201,9 @@ const createBanner = async (req, res) => {
       // Создаем новую запись в базе данных
 
       // const randomCode = generateRandom6DigitCode();
-      const randomCode = generateSixDigitCodeFromDate();
+      console.log('req.body.createdDate', req.body.createdDate);
+
+      const randomCode = generateSixDigitCodeFromDate(req.body.createdDate);
       console.log('сформированный код', randomCode);
 
       const authHeader = req.headers['authorization'];

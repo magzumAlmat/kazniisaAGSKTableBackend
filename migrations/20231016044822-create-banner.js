@@ -35,7 +35,7 @@ module.exports = {
       },
       rentDays: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       expiredDate: {
         type: Sequelize.STRING,
