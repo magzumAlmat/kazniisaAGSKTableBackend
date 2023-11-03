@@ -129,15 +129,12 @@ function generateRandom6DigitCode() {
 //       }
 // }
 
-const addUniqueCodeToBannerImage=(req,res)=>{
- 
-
-
-
+const addUniqueCodeToBannerImage=async(req,res)=>{
 // Настройка хранилища для загруженных файлов с помощью Multer
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'D:/картинки'); // Путь к папке на диске D
+    cb(null, './public/banners/');
   },
   filename: function (req, file, cb) {
     // Генерация уникального имени файла
@@ -148,16 +145,29 @@ const storage = multer.diskStorage({
 // Создание экземпляра Multer с настройками хранилища
 const upload = multer({ storage: storage });
 
-app.use(express.json());
 
+const JPEG = require('jpeg-js')
+Jimp.decoders['image/jpeg'] = (data) => JPEG.decode(data, {
+	maxMemoryUsageInMB: 9144,
+	maxResolutionInMP: 60000
+})
 // Маршрут для загрузки изображения и добавления водяного знака
-app.post('/addwatermark', upload.single('image'), async (req, res) => {
+
   try {
     const imagePath = req.file.path;
-    const watermarkUrl = 'URL_ВОДЯНОГО_ЗНАКА';
+    const watermarkUrl = './public/banners/logo.jpeg';
 
     // Загрузка изображения и водяного знака
+    Jimp.RESOLUTION_LIMIT = 1000000; // Set it to your de
+    
     const image = await Jimp.read(imagePath);
+    if (image.getWidth() * image.getHeight() > Jimp.RESOLUTION_LIMIT) {
+      // Resize the image to fit within the limit
+      image.resize(2048, Jimp.AUTO); // Resize the image to fit within the limit
+
+    }
+
+
     const watermark = await Jimp.read(watermarkUrl);
 
     // Рассчитываем размеры водяного знака
@@ -173,11 +183,11 @@ app.post('/addwatermark', upload.single('image'), async (req, res) => {
     image.composite(watermark.resize(watermarkWidth, watermarkHeight), watermarkX, watermarkY, {
       mode: Jimp.BLEND_SOURCE_OVER,
       opacityDest: 1,
-      opacitySource: 0.5,
+      opacitySource: 1,
     });
 
     // Сохранение результата на диск
-    const outputFilePath = imagePath.replace('uploads', 'картинки');
+    const outputFilePath = imagePath.replace('uploads', './public/banners/');
     await image.writeAsync(outputFilePath);
 
     // Отправка сообщения об успешной обработке
@@ -186,10 +196,6 @@ app.post('/addwatermark', upload.single('image'), async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Произошла ошибка при обработке изображения.' });
   }
-});
-
-
-
 }
 
 const createBanner = async (req, res) => {
@@ -356,4 +362,4 @@ const getBannerByuniqueCode=async(req,res)=>{
 }
 
 
-module.exports={createBanner,getAllBanners,getBannerById,getBannerByuniqueCode,getBannerByCompenyId}
+module.exports={createBanner,getAllBanners,getBannerById,getBannerByuniqueCode,getBannerByCompenyId,addUniqueCodeToBannerImage}
