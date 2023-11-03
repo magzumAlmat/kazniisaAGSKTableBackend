@@ -131,7 +131,7 @@ function generateRandom6DigitCode() {
 
 const addUniqueCodeToBannerImage=async(req,res)=>{
 // Настройка хранилища для загруженных файлов с помощью Multer
-
+console.log('addUniqueCodeToBannerImage STARTED')
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './public/banners/');
@@ -154,8 +154,19 @@ Jimp.decoders['image/jpeg'] = (data) => JPEG.decode(data, {
 // Маршрут для загрузки изображения и добавления водяного знака
 
   try {
-    const imagePath = req.file.path;
-    const watermarkUrl = './public/banners/logo.jpeg';
+    // const imagePath = req.file[0].path;
+    // console.log('req.file.path;',req.file.path)
+
+    // const watermarkUrl = req.file[1].path;
+    const imagess = req.files;
+     console.log('images= ',imagess) 
+   
+      const imagePath = imagess[0].path;
+      const watermarkUrl = imagess[1].path;
+      // Process each image as needed
+      // ...
+  
+
 
     // Загрузка изображения и водяного знака
     Jimp.RESOLUTION_LIMIT = 1000000; // Set it to your de
@@ -191,12 +202,18 @@ Jimp.decoders['image/jpeg'] = (data) => JPEG.decode(data, {
     await image.writeAsync(outputFilePath);
 
     // Отправка сообщения об успешной обработке
+
+  
     res.json({ message: 'Водяной знак успешно добавлен.' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Произошла ошибка при обработке изображения.' });
   }
-}
+
+
+  }
+
+  
 
 const createBanner = async (req, res) => {
   console.log('Banner from createBanner server', req.body, req.file);
