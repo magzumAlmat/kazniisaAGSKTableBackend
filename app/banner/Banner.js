@@ -35,6 +35,16 @@ const Banner = sequelize.define('Banner', {
       allowNull:false
   },
 
+  bannerLatitude:{
+    type:DataTypes.STRING,
+    allowNull:false
+},
+
+  bannerLongitude:{
+    type:DataTypes.STRING,
+    allowNull:false
+},
+
   
     // Другие поля баннера
   });

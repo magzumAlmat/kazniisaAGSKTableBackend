@@ -174,7 +174,7 @@ Jimp.decoders['image/jpeg'] = (data) => JPEG.decode(data, {
     const image = await Jimp.read(imagePath);
     if (image.getWidth() * image.getHeight() > Jimp.RESOLUTION_LIMIT) {
       // Resize the image to fit within the limit
-      image.resize(2048, Jimp.AUTO); // Resize the image to fit within the limit
+       image.resize(2048, Jimp.AUTO); // Resize the image to fit within the limit
 
     }
 
@@ -287,6 +287,8 @@ const createBanner = async (req, res) => {
                   createdDate: req.body.createdDate,
                   rentDays: req.body.rentDays,
                   expiredDate: req.body.expiredDate,
+                  bannerLongitude:req.body.bannerLongitude,
+                  bannerLatitude:req.body.bannerLatitude,
               });
 
               // Отправляем успешный ответ с новой записью

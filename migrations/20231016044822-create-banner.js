@@ -41,6 +41,14 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      bannerLongitude: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      bannerLatitude: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
