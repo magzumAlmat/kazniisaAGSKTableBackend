@@ -255,17 +255,19 @@ const createBanner = async (req, res) => {
           return res.status(404).json({ message: 'User not found' });
       }
 
-      console.log('User.creatorId', user.companyId);
+      // console.log('User.creatorId', user.companyId);
 
       // Find the user's associated company
-      const userCompany = await Company.findOne({ where: { id: user.companyId } });
+      // const userCompany = await Company.findOne({ where: { id: user.companyId } });
 
-      if (!userCompany) {
-          return res.status(404).json({ message: 'User does not have an associated company.' });
-      }
+      // if (!userCompany) {
+      //     return res.status(404).json({ message: 'User does not have an associated company.' });
+      // }
 
-      console.log('1111req.body=', req.body);
-      console.log('1111USERCOMPANY=', userCompany);
+      // console.log('1111req.body=', req.body);
+      console.log('АЙДИ компании которая приходит=', req.body.companyId);
+      console.log('Тариф компании которая приходит=', req.body.tariff);
+      // console.log('1111USERCOMPANY=', userCompany);
 
       
       const Bann = await Banner.create({
@@ -275,11 +277,22 @@ const createBanner = async (req, res) => {
         imageUrl: `/banners/${randomCode}.webp`,
         uniqueCode: randomCode,
         CompanyId: req.body.companyId,
-        // createdDate: req.body.createdDate,
+        createdDate: req.body.createdDate,
         // rentDays: req.body.rentDays,
-        // expiredDate: req.body.expiredDate,
+        expiredDate: req.body.expiredDate,
         bannerLongitude:req.body.bannerLongitude,
-        bannerLatitude:req.body. bannerLatitude,
+        bannerLatitude:req.body.bannerLatitude,
+        isContainProhibitedAD:req.body.isContainProhibitedAD,
+        excludeFromReport:req.body. excludeFromReport,
+       
+        isAdRemoved:req.body.isAdRemoved,
+        isOnListOfDismantling:req.body. isOnListOfDismantling,
+        
+        categoryOfStreet:req.body.categoryOfStreet,
+        typeOfAdObject:req.body.selectedType,
+        viewOfAd:req.body.selectedViewOfAd,
+        tariff:req.body.tariff,
+        countOfSides:req.body.countOfSides,
     });
 
     // Отправляем успешный ответ с новой записью

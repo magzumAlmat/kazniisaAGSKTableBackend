@@ -8,11 +8,11 @@ const Banner = sequelize.define('Banner', {
     },
     bannerNumber:{
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
       },
-    banerAddress:{
+      bannerAddress:{
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
       },
     imageUrl: {
       type: DataTypes.STRING,
@@ -43,6 +43,34 @@ const Banner = sequelize.define('Banner', {
   bannerLongitude:{
     type:DataTypes.STRING,
     allowNull:false
+},
+isSocialAD: {
+  type:DataTypes.BOOLEAN,
+  allowNull:true
+},
+isContainProhibitedAD: {
+  type:DataTypes.BOOLEAN,
+  allowNull:true
+},
+categoryOfStreet: {
+  type:DataTypes.STRING,
+  allowNull:true
+},
+typeOfAdObject: {
+  type:DataTypes.STRING,
+  allowNull:true
+},
+viewOfAd: {
+  type:DataTypes.STRING,
+  allowNull:true
+},
+tariff: {
+  type:DataTypes.STRING,
+  allowNull:true
+},
+countOfSides: {
+  type:DataTypes.INTEGER,
+  allowNull:true
 },
 
   

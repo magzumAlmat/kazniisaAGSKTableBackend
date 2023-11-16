@@ -17,7 +17,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      banerAddress: {
+      bannerAddress: {
         type: Sequelize.STRING,
         allowNull: true,
       },
@@ -41,34 +41,61 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      bannerLongitude: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
       bannerLatitude: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      createdAt: {
-        allowNull: true,
-        type: Sequelize.DATE,
+      bannerLongitude: {
+        type: Sequelize.STRING,
+        allowNull: false,
       },
-      updatedAt: {
+      isSocialAD: {
+        type: Sequelize.BOOLEAN,
         allowNull: true,
-        type: Sequelize.DATE,
+      },
+      isContainProhibitedAD: {
+        type: Sequelize.BOOLEAN,
+        allowNull: true,
+      },
+      categoryOfStreet: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      typeOfAdObject: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      viewOfAd: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      tariff: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      countOfSides: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
       },
       CompanyId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Companies', // Здесь укажите имя таблицы, связанной с Company
+          model: 'Companies',
           key: 'id',
         },
         onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        onDelete: 'SET NULL',
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
       },
     });
   },
-
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('Banners');
   },
