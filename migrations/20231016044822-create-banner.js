@@ -11,19 +11,19 @@ module.exports = {
       },
       title: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       bannerNumber: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       banerAddress: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       imageUrl: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       uniqueCode: {
         type: Sequelize.STRING,
@@ -31,7 +31,7 @@ module.exports = {
       },
       createdDate: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       rentDays: {
         type: Sequelize.STRING,
@@ -39,7 +39,7 @@ module.exports = {
       },
       expiredDate: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       bannerLongitude: {
         type: Sequelize.STRING,
@@ -50,11 +50,11 @@ module.exports = {
         allowNull: false,
       },
       createdAt: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DATE,
       },
       updatedAt: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DATE,
       },
       CompanyId: {

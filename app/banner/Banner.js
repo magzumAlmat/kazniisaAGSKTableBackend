@@ -4,7 +4,7 @@ const Company=require("../auth/models/Company")
 const Banner = sequelize.define('Banner', {
     title: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull:true
     },
     bannerNumber:{
         type: DataTypes.STRING,
@@ -16,7 +16,7 @@ const Banner = sequelize.define('Banner', {
       },
     imageUrl: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull:true
     },
     uniqueCode:{
         type:DataTypes.STRING,
@@ -24,7 +24,7 @@ const Banner = sequelize.define('Banner', {
     },
     createdDate:{
       type:DataTypes.STRING,
-      allowNull:false
+      allowNull:true
   },
     rentDays:{
       type:DataTypes.STRING,
@@ -32,7 +32,7 @@ const Banner = sequelize.define('Banner', {
   },
     expiredDate:{
       type:DataTypes.STRING,
-      allowNull:false
+      allowNull:true
   },
 
   bannerLatitude:{

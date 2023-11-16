@@ -44,8 +44,8 @@ const createCompany=async(req,res)=>{
     
     try {
         // Извлекаем данные из тела запроса
-        const { name, bin, description, address, contactPhone,contactEmail} = req.body;
-        console.log('phone',req.body.contactPhone,'email',req.body.contactEmail)
+        const { name, bin, description, address, contactPhone,contactEmail,isUR} = req.body;
+        console.log('phone',req.body.contactPhone,'email',req.body.contactEmail, 'isUR', isUR)
         // Создаем новую запись в базе данных
 
         const existingCompany = await Company.findOne({
@@ -65,6 +65,7 @@ const createCompany=async(req,res)=>{
 
 
         const Comp = await Company.create({
+            isUR,
             name,
             description,
             bin,
@@ -73,42 +74,39 @@ const createCompany=async(req,res)=>{
             contactEmail,
         })
     
-        const authHeader = req.headers['authorization'];
+        // const authHeader = req.headers['authorization'];
 
-        if (!authHeader) {
-            return res.status(401).json({ message: 'Authorization header is missing' });
-        }
+        // if (!authHeader) {
+        //     return res.status(401).json({ message: 'Authorization header is missing' });
+        // }
 
         // Check if the header starts with "Bearer "
-        if (!authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ message: 'Invalid token format' });
-        }
+        // if (!authHeader.startsWith('Bearer ')) {
+        //     return res.status(401).json({ message: 'Invalid token format' });
+        // }
 
         // Extract the token (remove "Bearer " from the header)
-        const token = authHeader.substring(7);
+        // const token = authHeader.substring(7);
 
         // Now you have the JWT token in the 'token' variable
         // console.log('JWT Token:', token);
 
-        const UserId=jwt.decode(token)
-        console.log('Айди юзера который соответствует данному токену', UserId.id);
+        // const UserId=jwt.decode(token)
+        // console.log('Айди юзера который соответствует данному токену', UserId.id);
 
         
-        let user = await User.findOne({where: { id:UserId.id }})
+        // let user = await User.findOne({where: { id:UserId.id }})
 
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-          }
+        // if (!user) {
+        //     return res.status(404).json({ message: 'User not found' });
+        //   }
           
-        // console.log('hisis user=',user)
         
-      
-          // Update the user's companyId with the newCompany.id
-          user.companyId = Comp.id;
+          // user.companyId = Comp.id;
       
       
           
-        await user.save();
+        // await user.save();
         
         console.log('User companyId должна перезаписаться')
         
@@ -413,7 +411,8 @@ const verifyCodeInspector=async(req,res)=>{
 
 
 
-// const addFullProfile = async(req,res)=>{
+
+// c onst addFullProfile = async(req,res)=>{
 
 //   console.log('111 AddFullProfile Started',req.body)
 

@@ -268,51 +268,36 @@ const createBanner = async (req, res) => {
       console.log('1111USERCOMPANY=', userCompany);
 
       
-      const Bann = await Banner.create({
-        // title: req.body.title,
-        bannerNumber: req.body.bannerNumber,
-        banerAddress: req.body.bannerAddress,
-        imageUrl: `/banners/${randomCode}.webp`,
-        uniqueCode: randomCode,
-        CompanyId: req.body.companyId,
-        // createdDate: req.body.createdDate,
-        // rentDays: req.body.rentDays,
-        // expiredDate: req.body.expiredDate,
-        bannerLongitude:req.body.bannerLongitude,
-        bannerLatitude:req.body. bannerLatitude,
-    });
 
-    // Отправляем успешный ответ с новой записью
-    res.status(201).json(Bann);
 
       
-      // // Обработка изображения с использованием библиотеки sharp
-      // sharp(req.file.path) // Загруженный файл
-      //     .resize(800, 600) // Изменение размера изображения
-      //     .toFormat('webp', { quality: 20 }) // Конвертация в WebP
-      //     .toFile(`./public/banners/${randomCode}.webp`, async (err, info) => {
-      //         if (err) {
-      //             console.error(err);
-      //             return res.status(500).json({ error: 'Ошибка при обработке изображения' });
-      //         }
+      // Обработка изображения с использованием библиотеки sharp
+      sharp(req.file.path) // Загруженный файл
+          .resize(800, 600) // Изменение размера изображения
+          .toFormat('webp', { quality: 20 }) // Конвертация в WebP
+          .toFile(`./public/banners/${randomCode}.webp`, async (err, info) => {
+              if (err) {
+                  console.error(err);
+                  return res.status(500).json({ error: 'Ошибка при обработке изображения' });
+              }
 
-      //         const Bann = await Banner.create({
-      //             title: req.body.title,
-      //             bannerNumber: req.body.bannerNumber,
-      //             banerAddress: req.body.bannerAddress,
-      //             imageUrl: `/banners/${randomCode}.webp`,
-      //             uniqueCode: randomCode,
-      //             CompanyId: userCompany.id,
-      //             createdDate: req.body.createdDate,
-      //             rentDays: req.body.rentDays,
-      //             expiredDate: req.body.expiredDate,
-      //             bannerLongitude:req.body.bannerLongitude,
-      //             bannerLatitude:req.body. bannerLatitude,
-      //         });
+              const Bann = await Banner.create({
+                  title: req.body.title,
+                  bannerNumber: req.body.bannerNumber,
+                  banerAddress: req.body.bannerAddress,
+                  imageUrl: `/banners/${randomCode}.webp`,
+                  uniqueCode: randomCode,
+                  CompanyId: userCompany.id,
+                  createdDate: req.body.createdDate,
+                  rentDays: req.body.rentDays,
+                  expiredDate: req.body.expiredDate,
+                  bannerLongitude:req.body.bannerLongitude,
+                  bannerLatitude:req.body. bannerLatitude,
+              });
 
-      //         // Отправляем успешный ответ с новой записью
-      //         res.status(201).json(Bann);
-      //     });
+              // Отправляем успешный ответ с новой записью
+              res.status(201).json(Bann);
+          });
 
   } catch (error) {
       // В случае ошибки отправляем статус 500 и сообщение об ошибке

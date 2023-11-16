@@ -2,6 +2,12 @@ const {DataTypes} = require('sequelize')
 const sequelize = require('../../../config/db')
 
 const Company = sequelize.define('Company', {
+    isUR:{
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+      
+    },
+
     name: {
         type: DataTypes.STRING,
         allowNull: false,

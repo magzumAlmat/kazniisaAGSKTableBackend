@@ -38,13 +38,7 @@ module.exports = {
           key: 'id'
         }
       },
-      companyId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'Companies',
-          key: 'id'
-        }
-      }
+      
     });
   },
 
