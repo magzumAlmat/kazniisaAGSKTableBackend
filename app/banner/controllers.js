@@ -216,8 +216,27 @@ Jimp.decoders['image/jpeg'] = (data) => JPEG.decode(data, {
   
 
 const createBanner = async (req, res) => {
-  console.log('Banner from createBanner server', req.body, req.file);
+  console.log('0 Banner - ', req.body);
+  console.log('1 Banner req.body.imageUrl- ',req.body.imageUrl)
 
+  const files = req.files;
+
+    // Process other data and create banner record...
+
+    // Save file paths to the Banner table
+  const filePaths = files.map(file => file.path);
+  console.log('2 Banner filePATHSS - ', filePaths);
+
+  req.files.forEach(async (file) => {
+    // await BannerFile.create({
+    //     bannerId: Bann.id,
+    //     filename: file.filename,
+    //     originalname: file.originalname,
+    //     mimetype: file.mimetype,
+    //     size: file.size,
+    // });
+    console.log('3 Banner FILE=',file)
+});
   try {
       // Извлекаем данные из тела запроса
 
@@ -269,12 +288,12 @@ const createBanner = async (req, res) => {
       console.log('Тариф компании которая приходит=', req.body.tariff);
       // console.log('1111USERCOMPANY=', userCompany);
 
-      
+     
       const Bann = await Banner.create({
         // title: req.body.title,
         bannerNumber: req.body.bannerNumber,
-        banerAddress: req.body.bannerAddress,
-        imageUrl: `/banners/${randomCode}.webp`,
+        bannerAddress: req.body.bannerAddress,
+        // imageUrl: `/banners/${randomCode}.webp`,
         uniqueCode: randomCode,
         CompanyId: req.body.companyId,
         createdDate: req.body.createdDate,
@@ -295,7 +314,53 @@ const createBanner = async (req, res) => {
         countOfSides:req.body.countOfSides,
     });
 
-    // Отправляем успешный ответ с новой записью
+
+
+    // const filePaths = files.map(file => ({
+    //   bannerId: Bann.id, // Adjust to your Banner model's primary key
+    //   path: file.path,
+    // }));
+
+
+    // await Banner.update({
+    //   imageUrl: filePaths.map(file => file.path).join(','), // Combine paths into a comma-separated string
+    // });
+  
+    const filePaths = files.map(file => ({
+      bannerId: Bann.id, // Adjust to your Banner model's primary key
+      path: file.path,
+    }));
+   
+    const existingFilePaths = Bann.imageUrl || [];
+
+    // Combine the existing and new file paths
+    const allFilePaths = [...existingFilePaths, ...filePaths.map(file => file.path)];
+
+    // Update the banner with the combined file paths
+   
+    console.log('allfieldPaths===',allFilePaths,typeof(allFilePaths))
+    // const filePaths1 = [
+    //   'public/banners/1700202550244.png',
+    //   'public/banners/1700202550250.jpg',
+    //   'public/banners/1700202550251.jpeg',
+    //   'public/banners/1700202550253.jpg',
+    // ];
+    // Update the banner with the combined file paths
+
+
+    const images = [];
+    for (let i = 0; i < filePaths.length; i++) {
+      images.push({ imageUrl: filePaths[i].path });
+    }
+    
+    console.log('Finished images array', images, typeof(images));
+    
+    // Update the banner with the combined file paths
+    await Bann.update({
+      imageUrl: images.map(image => image.imageUrl).join(','), // Combine paths into a comma-separated string
+    });
+    console.log('updated imageUrl')
+
     res.status(201).json(Bann);
 
       

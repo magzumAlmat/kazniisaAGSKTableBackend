@@ -14,10 +14,10 @@ const Banner = sequelize.define('Banner', {
         type: DataTypes.STRING,
         allowNull: true
       },
-    imageUrl: {
-      type: DataTypes.STRING,
-      allowNull:true
-    },
+      imageUrl: {
+        type: DataTypes.TEXT,
+        allowNull: true
+      },
     uniqueCode:{
         type:DataTypes.STRING,
         allowNull:false

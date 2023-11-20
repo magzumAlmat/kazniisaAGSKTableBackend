@@ -1,3 +1,5 @@
+
+const path = require("path");
 const express=require('express')
 const logger=require('morgan') // для логирования кто к нам по какому запросу стучался
 
@@ -13,9 +15,10 @@ app.use(cors());
 
 app.use(express.urlencoded({ extended: true })); //сериализация   на уровне экспресса для того чтобы бэк понял пост запрос 
 app.use(express.json())
-app.use(express.static(__dirname+'/public'))
 
+// app.use(express.static(__dirname+'/public'))
 
+app.use(express.static(path.join(__dirname)));
 
 
 //app.use(upload.any())  парсинг формдаты
