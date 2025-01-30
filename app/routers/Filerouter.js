@@ -6,9 +6,14 @@ const {
   updateFile, 
   deleteFile 
 } = require("../controllers/Filecontroller");
+const {createTag,addTagToFile} = require("../controllers/CreateTags")
 const upload = require("../../config/multer");
 const File= require('../../app/models/File')
 const router = express.Router();
+
+
+router.post('/addtagtofile',addTagToFile)
+router.post("/createtag", createTag);
 
 // Create
 router.post("/upload", upload.single("file"), uploadFile);

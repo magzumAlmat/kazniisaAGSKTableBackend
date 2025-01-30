@@ -1,4 +1,6 @@
 const File = require("../models/File");
+const FileTags = require("../models/FileTags");
+const Tags=require("../models/FileTags")
 const fs = require("fs");
 const path = require("path");
 
@@ -41,15 +43,50 @@ const path = require("path");
 
 
 const uploadFile = async (req, res) => {
+  // try {
+  //   console.log("Uploaded file:", req.file, 'this is req body-', req.body.name);
+
+  //   const { originalname, mimetype, path: filePath } = req.file;
+  //   console.log('THIS IS FilePath-', filePath);
+
+  //   const correctName = req.body.name 
+  //   console.log('correct name=', correctName);
+
+  //   const file = await File.create({
+  //     name: correctName,
+  //     path: filePath,
+  //     originalname: correctName,
+  //     mimetype,
+  //   });
+
+  //   const newFile = {
+  //     ...file.toJSON(), // Копируем все свойства из исходного файла
+  //     originalname: correctName, // Меняем имя файла
+  //   };
+
+    
+  //   console.log('newFile=', newFile.originalname);
+
+  //   res.status(201).json({
+  //     message: "File uploaded successfully!",
+  //     newFile,
+  //   });
+  // } catch (error) {
+  //   console.error("Error uploading file:", error);
+  //   res.status(500).json({ message: "File upload failed." });
+  // }
+
+
   try {
-    console.log("Uploaded file:", req.file, 'this is req body-', req.body.name);
+    console.log("Uploaded file:", req.file, "this is req body-", req.body.name);
 
     const { originalname, mimetype, path: filePath } = req.file;
-    console.log('THIS IS FilePath-', filePath);
+    console.log("THIS IS FilePath-", filePath);
 
-    const correctName = req.body.name 
-    console.log('correct name=', correctName);
+    const correctName = req.body.name;
+    console.log("correct name=", correctName);
 
+    // Создаем файл
     const file = await File.create({
       name: correctName,
       path: filePath,
@@ -57,12 +94,30 @@ const uploadFile = async (req, res) => {
       mimetype,
     });
 
+    // Получаем теги из тела запроса
+    const tags = req.body.tags || [];
+    console.log("Tags from request:", tags);
+
+    // Создаем или находим теги и привязываем их к файлу
+    const tagInstances = await Promise.all(
+      tags.map(async (tagName) => {
+        const [tag] = await Tag.findOrCreate({
+          where: { name: tagName },
+        });
+        return tag;
+      })
+    );
+
+    // Привязываем теги к файлу через промежуточную таблицу FileTag
+    await file.addTags(tagInstances);
+
+    // Формируем ответ с информацией о файле и тегах
     const newFile = {
-      ...file.toJSON(), // Копируем все свойства из исходного файла
-      originalname: correctName, // Меняем имя файла
+      ...file.toJSON(),
+      tags: tagInstances.map((tag) => tag.name), // Добавляем теги в ответ
     };
 
-    console.log('newFile=', newFile.originalname);
+    console.log("newFile with tags=", newFile);
 
     res.status(201).json({
       message: "File uploaded successfully!",
@@ -72,6 +127,7 @@ const uploadFile = async (req, res) => {
     console.error("Error uploading file:", error);
     res.status(500).json({ message: "File upload failed." });
   }
+
 };
 
 // List all files

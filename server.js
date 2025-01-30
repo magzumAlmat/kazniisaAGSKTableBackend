@@ -40,7 +40,13 @@ const storage = multer.diskStorage({
 });
   
 const fileFilter = (req, file, cb) => {
-    const allowedTypes = ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/msword"];
+  const allowedTypes = [
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
+    "application/msword", // DOC
+    "application/pdf", // PDF
+    "image/vnd.djvu", // DJVU
+    "image/x-djvu" // DJVU (альтернативный MIME-тип)
+  ];
     if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
     } else {
@@ -57,62 +63,63 @@ const fileFilter = (req, file, cb) => {
   });
 
   app.use("/api", fileRoutes);
-  app.post("/upload", upload.single("file"), async(req, res) => {
-    if (!req.file) {
-      return res.status(400).send("No file uploaded.");
-    }
+//   app.post("/upload", upload.single("file"), async(req, res) => {
+//     if (!req.file) {
+//       return res.status(400).send("No file uploaded.");
+//     }
   
-    const { originalname, path: filePath } = req.file;
-    const correctName = req.body.name.slice(0, -5); 
+//     const { originalname, path: filePath } = req.file;
+//     const correctName = req.body.name.slice(0, -5); 
+//     console.log('multer при upload файла в папку- ',correctName)
   
-    // Переименовываем файл
-    const newFilePath = path.join(
-      path.dirname(filePath),
-      correctName + path.extname(originalname)
-    );
+//     // Переименовываем файл
+//     const newFilePath = path.join(
+//       path.dirname(filePath),
+//       correctName + path.extname(originalname)
+//     );
   
-    fs.rename(filePath, newFilePath, (err) => {
-      if (err) {
-        console.error("Error renaming file:", err);
-        return res.status(500).send("Error renaming file.");
-      }
+//     fs.rename(filePath, newFilePath, (err) => {
+//       if (err) {
+//         console.error("Error renaming file:", err);
+//         return res.status(500).send("Error renaming file.");
+//       }
   
-      res.send("File uploaded and renamed successfully.");
-    });
+//       res.send("File uploaded and renamed successfully.");
+//     });
 
-    try {
-        console.log("Uploaded file:", req.file, 'this is req body-', req.body.name);
+//     try {
+//         console.log("Uploaded file:", req.file, 'this is req body-', req.body.name);
     
-        const { originalname, mimetype, path: filePath } = req.file;
-        console.log('THIS IS FilePath-', filePath);
+//         const { originalname, mimetype, path: filePath } = req.file;
+//         console.log('THIS IS FilePath-', filePath);
     
-        const correctName = req.body.name.slice(0, -5); 
+//         const correctName = req.body.name.slice(0, -5); 
         
-        console.log('!@!!correct name=', correctName);
+//         console.log('!@!!correct name=', correctName);
     
-        const file = await File.create({
-          name: correctName,
-          path: newFilePath,
-          originalname: correctName,
-          mimetype,
-        });
+//         const file = await File.create({
+//           name: correctName,
+//           path: newFilePath,
+//           originalname: correctName,
+//           mimetype,
+//         });
     
-        const newFile = {
-          ...file.toJSON(), // Копируем все свойства из исходного файла
-          originalname: correctName, // Меняем имя файла
-        };
+//         const newFile = {
+//           ...file.toJSON(), // Копируем все свойства из исходного файла
+//           originalname: correctName, // Меняем имя файла
+//         };
     
-        console.log('newFile=', newFile.originalname);
+//         console.log('newFile=', newFile.originalname);
     
-        res.status(201).json({
-          message: "File uploaded successfully!",
-          newFile,
-        });
-      } catch (error) {
-        console.error("Error uploading file:", error);
-        // res.status(500).json({ message: "File upload failed." });
-      }
-})
+//         res.status(201).json({
+//           message: "File uploaded successfully!",
+//           newFile,
+//         });
+//       } catch (error) {
+//         console.error("Error uploading file:", error);
+//         res.status(500).json({ message: "File upload failed." });
+//       }
+// })
 //app.use(upload.any())  парсинг формдаты
 
 
@@ -124,6 +131,56 @@ const fileFilter = (req, file, cb) => {
 //     console.log(req.body)
 //     res.status(200).send('POST /api works | Success!')
 // })
+
+app.post("/upload", upload.single("file"), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).send("No file uploaded.");
+  }
+
+  const { originalname, path: filePath, mimetype } = req.file;
+  
+   correctName = ''
+  if(req.body.name!=undefined){
+    correctName=req.body.name.slice(0, -5);
+  }
+  
+  console.log('multer при upload файла в папку- ', correctName);
+
+  // Переименовываем файл
+  const newFilePath = path.join(
+    path.dirname(filePath),
+    correctName + path.extname(originalname)
+  );
+
+  try {
+    // Переименование файла
+    await fs.promises.rename(filePath, newFilePath);
+
+    // Создание записи в базе данных
+    const file = await File.create({
+      name: correctName,
+      path: newFilePath,
+      originalname: correctName,
+      mimetype,
+    });
+
+    const newFile = {
+      ...file.toJSON(), // Копируем все свойства из исходного файла
+      originalname: correctName, // Меняем имя файла
+    };
+
+    console.log('newFile=', newFile.originalname);
+
+    // Отправка ответа клиенту
+    res.status(201).json({
+      message: "File uploaded and renamed successfully!",
+      newFile,
+    });
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    res.status(500).json({ message: "File upload failed." });
+  }
+});
 app.use(passport.initialize());
 
 app.use(require('./app/auth/routes'))
